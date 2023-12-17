@@ -12,5 +12,6 @@
 
       "baseUrl": "types",
       "typeRoots": ["./types"]
-    }
+    },
+    "exclude": [".eslintrc.js"]
   }
