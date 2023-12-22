@@ -28,6 +28,9 @@ export class Lcd1602A {
    */
   private readonly data: GPIO[] = [];
 
+  private linebuffer1: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  private linebuffer2: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
   constructor(rsPin: number, rwPin: number, ePin: number, dataPins: number[]) {
     if (dataPins.length != 8) {
       throw new Error('Expected 8 GPIO data entries');
@@ -154,20 +157,30 @@ export class Lcd1602A {
     this.send(1, 0, data, 0b11111111);
   }
 
+  private updateDDRAM(buffer: number[], text: string, offset: number) {
+    let currentAddress = -1;
+    for (let x = 0; x < 16; x++) {
+      let charCode = text.charCodeAt(x);
+      if (charCode != buffer[x]) {
+        let expectedAddr = x+offset;
+        if (currentAddress != expectedAddr) {
+          this.setDDRAMAddress(expectedAddr);
+        }
+
+        this.writeData(charCode);
+        buffer[x] = charCode;
+        currentAddress = expectedAddr + 1;
+      }
+    }
+  }
+
   setText(text: string, alignment: TextAlign = TextAlign.Left) {
     let lines = text.split('\n');
     let line1 = align(lines.shift() ?? '', alignment);
     let line2 = align(lines.shift() ?? '', alignment);
 
-    this.setDDRAMAddress(0x00);
-    for (let x = 0; x < 16; x++) {
-      this.writeData(line1.charCodeAt(x));
-    }
-
-    this.setDDRAMAddress(0x40);
-    for (let x = 0; x < 16; x++) {
-      this.writeData(line2.charCodeAt(x));
-    }
+    this.updateDDRAM(this.linebuffer1, line1, 0);
+    this.updateDDRAM(this.linebuffer2, line2, 0x40);
   }
 
   initialize(functionSet: FunctionSet, displayMode: DisplayMode): void {
