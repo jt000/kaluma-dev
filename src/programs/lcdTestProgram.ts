@@ -40,12 +40,3 @@ export class LcdTestProgram implements IProgram {
         return true;
     }
 }
-
-function timedAction(name: string, cb: () => void): void {
-
-    const startTime = micros();
-    cb();
-    const endTime = micros();
-
-    console.log(`${name}>> Start: ${startTime}, End: ${endTime}, TOTAL: ${(endTime - startTime) / 1000}ns`)
-}

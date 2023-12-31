@@ -1,9 +1,9 @@
 // main.ts
 
-import { SerialToLcdProgram } from "./programs/streamToLcdProgram";
+import { GpsProgram } from "./programs/gpsProgram";
 import { programRunner } from "./runner";
 
-var program = new SerialToLcdProgram();
+var program = new GpsProgram();
 
 programRunner.Run(program)
   .then(() => {

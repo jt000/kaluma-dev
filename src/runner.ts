@@ -10,8 +10,8 @@ class ProgramRunner {
 
         try {
             await program.setup();
-        } catch (e) {
-            console.error("UNCAUGHT ERROR in setup()", e);
+        } catch (e: any) {
+            console.error("UNCAUGHT ERROR in setup(): ", e);
             return;
         }
 
@@ -19,8 +19,8 @@ class ProgramRunner {
             while (continueRun) {
                 continueRun = (await program.loop()) !== false;
             }
-        } catch (e) {
-            console.error("UNCAUGHT ERROR in loop", e);
+        } catch (e: any) {
+            console.error("UNCAUGHT ERROR in loop(): ", e);
             return;
         }
     }

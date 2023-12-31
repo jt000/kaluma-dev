@@ -45,7 +45,7 @@ export class Lcd1602A {
   }
 
   lastCommand: string = "";
-  public send(rs: 0 | 1, rw: 0 | 1, bits: number, mode: number) {
+  private send(rs: 0 | 1, rw: 0 | 1, bits: number, mode: number) {
 
     // ensure 'e' is low
     this.e.low();
@@ -176,11 +176,18 @@ export class Lcd1602A {
 
   setText(text: string, alignment: TextAlign = TextAlign.Left) {
     let lines = text.split('\n');
-    let line1 = align(lines.shift() ?? '', alignment);
-    let line2 = align(lines.shift() ?? '', alignment);
+    this.setLine1(lines.shift() ?? '', alignment)
+    this.setLine2(lines.shift() ?? '', alignment)
+  }
 
-    this.updateDDRAM(this.linebuffer1, line1, 0);
-    this.updateDDRAM(this.linebuffer2, line2, 0x40);
+  setLine1(text: string, alignment: TextAlign = TextAlign.Left) {
+    let line = align(text ?? '', alignment);
+    this.updateDDRAM(this.linebuffer1, line, 0);    
+  }
+
+  setLine2(text: string, alignment: TextAlign = TextAlign.Left) {
+    let line = align(text ?? '', alignment);
+    this.updateDDRAM(this.linebuffer2, line, 0x40);      
   }
 
   initialize(functionSet: FunctionSet, displayMode: DisplayMode): void {
